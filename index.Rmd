@@ -54,7 +54,23 @@ plot <- ggplot(d1, aes(x=value,y=mpg)) +
 ggplotly(plot)
 ```
 
+## Correlation of Displacement and Power
+
+```{r, echo=FALSE}
+d2 <- select(mtcars, mpg, wt, cyl:hp) %>%
+     mutate(., model=rownames(mtcars))
+fit <- lm(hp ~ disp, data = d2)
+plot_ly(d2, x=~disp, y=~hp) %>%
+     add_markers(y=~hp) %>%
+     add_lines(x=~disp, y=fitted(fit)) %>%
+     layout(showlegend = F)
+```
+
 ## Conclusions
 
 + All investigated design aspects lower mpg as they increase.
 + Weight is very important as an engine of the same size is required to do more work to move the same mass.
++ Having more cylinders means more fuel is consumed per mile.
++ Displacement and horsepower are positively correlated.
+     + Having a greater cylinder volume means the engine is capable of generating more power.
+     
