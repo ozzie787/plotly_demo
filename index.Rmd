@@ -1,0 +1,60 @@
+---
+title: "Effect of Car Design on Miles per Gallon"
+author: "Stephen J. Osborne"
+date: "20th September 2018"
+logo: "sjo.png"
+output: ioslides_presentation
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(message=FALSE, warning=FALSE, error=FALSE)
+```
+
+```{r, echo=FALSE}
+library(data.table)
+library(dplyr)
+library(tidyr)
+library(ggplot2)
+library(plotly)
+```
+
+## Introduction
+
++ Load `mtcars` from datasets
+
+```{r}
+library(datasets); data("mtcars")
+```
+
++ The data comprises of fuel consumption and 10 aspects of automobile design and performance for 32 automobiles (1973–74 models).
+
++ How does the design of the car affect the miles per gallon (mpg)?
+
++ I will focus on:
+     + Weight, Number of cylinders, Engine displacement, Engine horsepower
+
+## Results: Plots using `ggplotly()`
+
+```{r, echo=FALSE}
+d1 <- select(mtcars, mpg, wt, cyl:hp) %>%
+     gather(., mpg) %>%
+     mutate(., mpgval=rep(mtcars$mpg,4),
+            model=rep(rownames(mtcars),4)
+            )
+colnames(d1) <- c("aspect","value","mpg","model")
+d1 <- mutate(d1, aspect=factor(aspect))
+levels(d1$aspect) <- c("Cylinders/no units","Displacement/cubic inches","Horsepower/hp","Weight/ton")
+
+plot <- ggplot(d1, aes(x=value,y=mpg)) +
+     geom_point(aes(text = paste("Model:", model))) +
+     geom_smooth(method="glm",aes(color = aspect)) +
+     facet_wrap(~ aspect, scales = "free_x") +
+     theme_classic() + theme(legend.position = "none")
+
+ggplotly(plot)
+```
+
+## Conclusions
+
++ All investigated design aspects lower mpg as they increase.
++ Weight is very important as an engine of the same size is required to do more work to move the same mass.
